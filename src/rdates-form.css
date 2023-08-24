@@ -1,10 +1,250 @@
+/*
+  MIT License
+
+  Copyright (c) 2023 Gabriel Votaw
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-/* REMOVE AFTER MANUAL TESTING!!! */
-:root {
-  background: #ccc;
+input:focus,
+select:focus {
+  outline: none;
 }
 
-.rdate-form-sgn {
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.visible {
+  display: flex !important;
+}
+
+.rdate-container-sgn {
   font-family: 'Roboto', sans-serif;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(32, 33, 36, .6); 
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdate-sgn {
+  background-color: white;
+  min-width: 384px;
+  max-width: 560px;
+  max-height: calc(100% - 32px);
+  border-radius: 8px;
+}
+
+.rdate-title-sgn {
+  color: #1c1c1c;
+  margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  margin-bottom: 1px;
+  padding: 0 24px 13px 24px;
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  -webkit-box-direction: normal;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5rem;
+  letter-spacing: .00625em;
+}
+
+.rdate-main-content-sgn {
+  color: #3c4043;
+  -webkit-box-flex: 1;
+  overflow: auto;
+  padding: 0 24px;
+  line-height: 1.25rem;
+  font-size: .875rem;
+  letter-spacing: .0142857143em;
+  font-weight: 400;
+}
+
+.rdate-repeat-every-sgn {
+  padding: 8px 0px;
+  -webkit-box-align: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.rdate-interval-input-sgn {
+  color: #3c4043;
+  background-color: rgb(241,243,244);
+  width: 30px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  padding: 0 16px;
+  overflow: hidden;
+}
+
+.rdate-frequency-select-sgn {
+  cursor: pointer;
+  background-color: rgb(241,243,244);
+  padding: 0 16px;
+  border: none;
+  border-radius: 4px;
+  height: 36px;
+}
+
+.rdate-ends-text-sgn {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  -webkit-box-align: center;
+}
+
+.rdate-ends-on-sgn,
+.rdate-ends-after-sgn {
+  height: 44px;
+  margin-left: 1px;
+  display: flex;
+  align-items: center;
+  -webkit-box-align: center;
+}
+
+.radio-ends-on-container,
+.radio-ends-after-container {
+  display: flex;
+  align-items: center;
+  width: 21px;
+  height: 36px;
+}
+
+.radio-ends-on,
+.radio-ends-after {
+  margin: 0;
+  width: 15px;
+  height: 15px;
+}
+
+.radio-ends-on-label,
+.radio-ends-after-label {
+  width: 92px;
+}
+
+.ends-on-date-input,
+.ends-after-input {
+  cursor: pointer;
+  background-color: rgb(241,243,244);
+  padding: 0 16px;
+  border: none;
+  border-radius: 4px;
+  width: 80px;
+  height: 36px;
+}
+
+.ends-after-input {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.ends-after-input {
+  width: 30px;
+}
+
+.ends-after-input-label {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: flex;
+  align-items: center;
+  background-color: rgb(241,243,244);
+  padding: 0 16px;
+  height: 36px;
+}
+
+.rdate-control-button-group {
+  padding: 2px;
+  position: relative;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  min-height: 52px;
+}
+
+.rdate-cancel-btn,
+.rdate-done-btn {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  width: 60px;
+  height: 32px;
+}
+
+.rdate-cancel-btn {
+  color: rgb(95,99,104);
+  margin-right: 10px;
+}
+
+.rdate-cancel-btn:hover {
+  color: #3c4043;
+  background-color: rgba(0, 0, 0, 0.05)
+}
+
+.rdate-done-btn {
+  color: rgb(26,115,232);
+}
+
+.rdate-done-btn:hover {
+  color: rgb(17, 81, 164);
+  background-color: rgba(35, 35, 255, 0.05);
+}
+
+.cancelBtn,
+.applyBtn {
+  font-weight: 500 !important;
+  letter-spacing: .0142857143em;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px !important;
+}
+
+.cancelBtn {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.applyBtn {
+  color: white;
+  background-color: #007bff
+}
+
+.drp-calendar {
+  -webkit-font-smoothing: antialiased;
 }
