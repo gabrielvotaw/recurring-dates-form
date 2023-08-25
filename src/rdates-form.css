@@ -38,7 +38,11 @@ select:focus {
   display: flex !important;
 }
 
-.rdate-container-sgn {
+.hidden {
+  display: none !important;
+}
+
+.rdate-container {
   font-family: 'Roboto', sans-serif;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
@@ -53,7 +57,7 @@ select:focus {
   justify-content: center;
 }
 
-.rdate-sgn {
+.rdate {
   background-color: white;
   min-width: 384px;
   max-width: 560px;
@@ -61,7 +65,7 @@ select:focus {
   border-radius: 8px;
 }
 
-.rdate-title-sgn {
+.rdate-title {
   color: #1c1c1c;
   margin-block-start: 0.83em;
   margin-block-end: 0.83em;
@@ -81,7 +85,7 @@ select:focus {
   letter-spacing: .00625em;
 }
 
-.rdate-main-content-sgn {
+.rdate-main-content {
   color: #3c4043;
   -webkit-box-flex: 1;
   overflow: auto;
@@ -92,14 +96,14 @@ select:focus {
   font-weight: 400;
 }
 
-.rdate-repeat-every-sgn {
+.rdate-repeat-every {
   padding: 8px 0px;
   -webkit-box-align: center;
   align-items: center;
   gap: 8px;
 }
 
-.rdate-interval-input-sgn {
+.rdate-interval-input {
   color: #3c4043;
   background-color: rgb(241,243,244);
   width: 30px;
@@ -110,7 +114,7 @@ select:focus {
   overflow: hidden;
 }
 
-.rdate-frequency-select-sgn {
+.rdate-frequency-select {
   cursor: pointer;
   background-color: rgb(241,243,244);
   padding: 0 16px;
@@ -119,15 +123,16 @@ select:focus {
   height: 36px;
 }
 
-.rdate-ends-text-sgn {
+.rdate-ends-text,
+.rdate-repeat-on-text {
   min-height: 40px;
   display: flex;
   align-items: center;
   -webkit-box-align: center;
 }
 
-.rdate-ends-on-sgn,
-.rdate-ends-after-sgn {
+.rdate-ends-on,
+.rdate-ends-after {
   height: 44px;
   margin-left: 1px;
   display: flex;
@@ -169,10 +174,14 @@ select:focus {
 .ends-after-input {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
+  width: 30px;
 }
 
-.ends-after-input {
-  width: 30px;
+.ends-on-date-input.disabled,
+.ends-after-input.disabled,
+.ends-after-input-label.disabled {
+  background-color: rgba(0, 0, 0, 0.025);
+  color: rgba(0, 0, 0, 0.3);
 }
 
 .ends-after-input-label {
@@ -223,6 +232,29 @@ select:focus {
 .rdate-done-btn:hover {
   color: rgb(17, 81, 164);
   background-color: rgba(35, 35, 255, 0.05);
+}
+
+.rdate-weekdays-container {
+  padding: 8px 0px;
+}
+
+.rdate-weekday {
+  width: 24px;
+  height: 24px;
+  background-color: rgb(241,243,244);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 500;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.rdate-weekday.active {
+  color: white;
+  background-color: #007bff !important;
 }
 
 .cancelBtn,
