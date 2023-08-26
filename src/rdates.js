@@ -169,25 +169,25 @@ const init = () => {
     },
   });
 
-  $('.rdate-frequency-select').change(onFrequencySelectChange);
+  $('.rdate-frequency-select').on('change', onFrequencySelectChange);
   $('.rdate-weekday').on('click', onWeekdayClick);
   $('.rdate-cancel-btn').on('click', onCancelClick);
 };
 
 /**
- * Initializes a recurring dates generation form plugin.
+ * Initializes a recurring dates generation form.
  * Can generate single dates or sets of time ranges if an end date is provided.
  *
+ * @param {jQuery} $element - The element that will trigger the modal.
  * @param {Object} options - Configuration options.
  * @param {Date} options.start - The (start) date for which dates will be generated.
- * Represents the single date or the start date of the initial date range.
+ * Represents a single date or the start date of the initial date range.
  * Defaults to the current date.
  * @param {Date|null} options.end - The end date of the initial date range. Defaults to null.
  * @param {string} options.title - The title of the recurrence modal. Defaults to 'Set recurrence'.
  *
- * @returns {jQuery} - The jQuery object.
  */
-function rDates(options) {
+function core($element, options) {
   const defaultOptions = {
     start: new Date(),
     end: null,
@@ -196,16 +196,36 @@ function rDates(options) {
 
   const settings = $.extend({}, defaultOptions, options);
 
-  return this.each(() => {
-    const $element = $(this);
-    $element.on('click', toggle);
+  $element.on('click', toggle);
 
-    create(settings);
-    init();
-    reset();
-  });
+  create(settings);
+  init();
+  reset();
 }
 
-$.fn.extend({ rDates });
+/**
+ * Initializes the rdates jQuery plugin.
+ */
+$.fn.extend({
+  rdates(options) {
+    return this.each(() => {
+      const $element = $(this);
+      core($element, options);
+    });
+  },
+});
 
-$('#my-show-modal-button').rDates();
+if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+  module.exports = {
+    toggle,
+    create,
+    onFrequencySelectChange,
+    onWeekdayClick,
+    reset,
+    onCancelClick,
+    init,
+    core,
+  };
+}
+
+$('#my-show-modal-button').rdates();

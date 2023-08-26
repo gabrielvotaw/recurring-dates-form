@@ -21,9 +21,18 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+    'import/no-extraneous-dependencies': [
+      'off',
+      {
+        devDependencies: true,
+      },
+    ],
   },
   globals: {
-    jQuery: true,
     $: true,
+    describe: 'readonly',
+    it: 'readonly',
+    beforeEach: 'readonly',
+    afterEach: 'readonly',
   },
 };
