@@ -22,13 +22,29 @@
   SOFTWARE.
  */
 
+const daysOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const frequencyMap = {
+  days: rrule.RRule.DAILY,
+  weeks: rrule.RRule.WEEKLY,
+  months: rrule.RRule.MONTHLY,
+  years: rrule.RRule.YEARLY,
+};
+
+const weekdayMap = {
+  SU: rrule.RRule.SU,
+  MO: rrule.RRule.MO,
+  TU: rrule.RRule.TU,
+  WE: rrule.RRule.WE,
+  TH: rrule.RRule.TH,
+  FR: rrule.RRule.FR,
+  SA: rrule.RRule.SA,
+};
+
 /**
  * Toggles the visibility of the modal.
  */
-const toggle = () => {
-  const $modal = $('.rdate-container');
-  $modal.toggleClass('visible');
-};
+const toggle = () => $('.rdates-container').toggleClass('visible');
 
 /**
  * Creates the modal and appends it to the root element.
@@ -36,43 +52,46 @@ const toggle = () => {
  */
 const create = (settings) => {
   const $modal = $('<div>')
-    .addClass('rdate-container')
+    .addClass('rdates-container')
     .html(`
-      <div class='rdate'>
-        <h2 class='rdate-title'>
+      <div class='rdates'>
+        <h2 class='rdates-title'>
           ${settings.title}
         </h2>
-        <div class='rdate-main-content'>
-          <div class='rdate-repeat-every row'>
+        <div class='rdates-main-content'>
+          <div class='rdates-repeat-every row'>
             <span>Repeat every</span>
             <input 
-              class='rdate-interval-input' 
+              class='rdates-interval-input' 
               type='number'
               value='1'
               min='1'
             >
-            <select class='rdate-frequency-select'>
+            <select class='rdates-frequency-select'>
               <option value='days'>days</option>
               <option value='weeks'>weeks</option>
               <option value='months'>months</option>
               <option value='years'>years</option>
             </select>
           </div>
-          <div id='rdate-content-weeks' class='rdate-week-container hidden content'>
-            <div class='rdate-repeat-on-text'>Repeat on</div>
-            <div class='rdate-weekdays-container row'>
-              <span class='rdate-weekday' data-dayofweek='SU'>S</span>
-              <span class='rdate-weekday' data-dayofweek='MO'>M</span>
-              <span class='rdate-weekday' data-dayofweek='TU'>T</span>
-              <span class='rdate-weekday' data-dayofweek='WE'>W</span>
-              <span class='rdate-weekday' data-dayofweek='TH'>T</span>
-              <span class='rdate-weekday' data-dayofweek='FR'>F</span>
-              <span class='rdate-weekday' data-dayofweek='SA'>S</span>
+          <div id='rdates-content-weeks' class='rdates-week-container hidden content'>
+            <div class='rdates-repeat-on-text'>Repeat on</div>
+            <div class='rdates-weekdays-container row'>
+              <span class='rdates-weekday' data-dayofweek='SU'>S</span>
+              <span class='rdates-weekday' data-dayofweek='MO'>M</span>
+              <span class='rdates-weekday' data-dayofweek='TU'>T</span>
+              <span class='rdates-weekday' data-dayofweek='WE'>W</span>
+              <span class='rdates-weekday' data-dayofweek='TH'>T</span>
+              <span class='rdates-weekday' data-dayofweek='FR'>F</span>
+              <span class='rdates-weekday' data-dayofweek='SA'>S</span>
             </div>
           </div>
-          <div class='rdate-ends-text'>Ends</div>
-          <div class='rdate-ends-radio-group'>
-            <div class='rdate-ends-on'>
+          <div id='rdates-content-months' class='rdates-month-container hidden content'>
+            <select class='rdates-monthly-on-select'></select>
+          </div>
+          <div class='rdates-ends-text'>Ends</div>
+          <div class='rdates-ends-radio-group'>
+            <div class='rdates-ends-on'>
               <div class='radio-ends-on-container'>
                 <input
                   type='radio'
@@ -84,9 +103,9 @@ const create = (settings) => {
                 >
               </div>
               <label for='radio-on' class='radio-ends-on-label'>On</label>
-              <input id='ends-on-date-input' class='ends-on-date-input' name='date' />
+              <input id='ends-on-date-input' class='ends-on-date-input ends-input' name='date' />
             </div>
-            <div class='rdate-ends-after'>
+            <div class='rdates-ends-after'>
               <div class='radio-ends-after-container'>
                 <input
                   type='radio'
@@ -99,7 +118,7 @@ const create = (settings) => {
               <label for='radio-after' class='radio-ends-after-label'>After</label>
               <input 
                 id='ends-after-input'
-                class='ends-after-input disabled'
+                class='ends-after-input ends-input disabled'
                 type='number'
                 min='1'
                 value='1'
@@ -110,9 +129,9 @@ const create = (settings) => {
               </label>
             </div>
           </div>
-          <div class='rdate-control-button-group'>
-            <button class='rdate-cancel-btn'>Cancel</button>
-            <button class='rdate-done-btn'>Done</button>
+          <div class='rdates-control-button-group'>
+            <button class='rdates-cancel-btn'>Cancel</button>
+            <button class='rdates-done-btn'>Done</button>
           </div>
         </div>
       </div>
@@ -128,39 +147,180 @@ function onFrequencySelectChange() {
   const selectedOption = $(this).val();
 
   $('.content').addClass('hidden');
-  $(`#rdate-content-${selectedOption}`).removeClass('hidden');
+  $(`#rdates-content-${selectedOption}`).removeClass('hidden');
 }
+
+const getDayOfWeek = (date) => {
+  const daysOfWeek = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  return daysOfWeek[date.getDay()];
+};
 
 /**
  * Handles the on click event when selecting a weekday.
+ *
+ * @param {jQuery} $weekdayElement - The weekday element.
+ * @param {string} settings - The modal settings.
  */
-function onWeekdayClick() {
-  const $weekdayElement = $(this);
+function onWeekdayClick($weekdayElement, settings) {
+  const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+  const $selectedDaysOfWeek = $('.rdates-weekday.active');
+  const isStartDateDayOfWeek = $weekdayElement.attr('data-dayofweek') === startDateDayOfWeek;
+
+  if (isStartDateDayOfWeek
+    && $selectedDaysOfWeek.length === 1
+    && $weekdayElement.hasClass('active')
+  ) {
+    return;
+  }
+
+  if ($selectedDaysOfWeek.length === 1
+    && $weekdayElement.hasClass('active')
+  ) {
+    $(`[data-dayofweek='${startDateDayOfWeek}']`).toggleClass('active');
+  }
+
   $weekdayElement.toggleClass('active');
 }
 
 /**
  * Resets the modal to its initial state.
+ *
+ * @param {Object} settings - The modal settings.
  */
-const reset = () => {
-  $('.rdate-interval-input').val(1);
+const reset = (settings) => {
+  $('.rdates-interval-input').val(1);
+  $('.rdates-frequency-select').val('days').trigger('change');
 
-  $('.rdate-frequency-select').val('days');
-  $('.rdate-frequency-select').trigger('change');
+  const dayName = daysOfWeekNames[settings.startDate.getDay()];
+
+  const pos = Math.floor((settings.startDate.getDate() - 1) / 7) + 1;
+  const posStrings = ['first', 'second', 'third', 'fourth', 'last'];
+  const posString = posStrings[pos - 1] || 'last';
+
+  const option1 = $('<option>');
+  const option2 = $('<option>');
+
+  option1.text(`Monthly on day ${settings.startDate.getDate()}`);
+  option1.data('type', 'day');
+  option1.val(settings.startDate.getDate());
+
+  option2.text(`Monthly on the ${posString} ${dayName}`);
+  option2.data('type', 'pos');
+  option2.val(`${pos} ${dayName}`);
+
+  $('.rdates-monthly-on-select').append(option1, option2);
+
+  const radioEndsOn = $('#radio-ends-on');
+  if (!radioEndsOn.prop('checked')) {
+    radioEndsOn.prop('checked', true).trigger('change');
+  }
+
+  $('.ends-on-date-input').data('daterangepicker').setStartDate(settings.startDate);
+  $('.ends-on-date-input').data('daterangepicker').setEndDate(settings.startDate);
+  $('.ends-after-input').val(1);
+
+  const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+  $(`[data-dayofweek="${startDateDayOfWeek}"]`).addClass('active');
 };
 
-const onCancelClick = () => {
+/**
+ * Handles the on click event of the cancel button.
+ *
+ * @param {settings} - The modal settings.
+ */
+const onCancelClick = (settings) => {
   toggle();
-  reset();
+  reset(settings);
+};
+
+const getSelectedWeekdays = () => {
+  const selectedWeekdayButtons = $('.rdates-weekday.active');
+
+  return selectedWeekdayButtons.map((i, button) => {
+    const value = button.getAttribute('data-dayofweek');
+    return weekdayMap[value];
+  });
+};
+
+const generateRule = (frequency, interval, dtstart, until) => {
+  const freq = frequencyMap[frequency];
+  const generator = {
+    freq,
+    interval,
+    dtstart,
+  };
+
+  if (frequency === 'weeks') {
+    generator.byweekday = getSelectedWeekdays();
+  }
+
+  const endsOnRadio = $('#radio-ends-on');
+
+  if (endsOnRadio.prop('checked')) {
+    generator.until = until;
+  } else {
+    const countString = $('.ends-after-input').val();
+    generator.count = parseInt(countString, 10);
+  }
+
+  return new rrule.RRule(generator);
+};
+
+const generateDates = (startDate, endDate, untilDate) => {
+  const intervalString = $('.rdates-interval-input').val();
+  const selectedInterval = parseInt(intervalString, 10);
+
+  const selectedFrequency = $('.rdates-frequency-select').val();
+
+  const startDateRules = generateRule(selectedFrequency, selectedInterval, startDate, untilDate);
+  const startDates = startDateRules.all();
+
+  if (!endDate) {
+    console.log(startDates);
+    return startDates;
+  }
+
+  const endDateRules = generateRule(selectedFrequency, selectedInterval, endDate, untilDate);
+  const endDates = endDateRules.all();
+
+  const dateRanges = startDateRules.all().map((start, i) => ({
+    start,
+    end: endDates[i],
+  }));
+
+  return dateRanges;
+};
+
+/**
+ * Handles the on click event of the done button.
+ *
+ * @param {Object} settings - The modal settings.
+ */
+const onDoneClick = (settings) => {
+  const { startDate, endDate } = settings;
+  const untilDate = $('.ends-on-date-input').data('daterangepicker').startDate.toDate();
+
+  const dates = generateDates(startDate, endDate, untilDate);
+};
+
+/**
+ * Handles the on change event of the ends radio inputs.
+ */
+const onEndsRadioInputChange = () => {
+  $('.ends-input')
+    .toggleClass('disabled')
+    .prop('disabled', (i, val) => !val);
 };
 
 /**
  * Initializes the reactive behaviors of the modal and its elements.
+ *
+ * @param {Object} settings - The modal settings.
  */
-const init = () => {
+const init = (settings) => {
   $('input[name="date"]').daterangepicker({
     singleDatePicker: true,
-    minDate: new Date(),
+    minDate: settings.startDate,
     locale: {
       format: 'MMM D, YYYY',
       daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -169,9 +329,11 @@ const init = () => {
     },
   });
 
-  $('.rdate-frequency-select').on('change', onFrequencySelectChange);
-  $('.rdate-weekday').on('click', onWeekdayClick);
-  $('.rdate-cancel-btn').on('click', onCancelClick);
+  $('.rdates-frequency-select').on('change', onFrequencySelectChange);
+  $('.rdates-weekday').on('click', function handler() { onWeekdayClick($(this), settings); });
+  $('input[type="radio"]').on('change', onEndsRadioInputChange);
+  $('.rdates-cancel-btn').on('click', () => onCancelClick(settings));
+  $('.rdates-done-btn').on('click', () => onDoneClick(settings));
 };
 
 /**
@@ -189,18 +351,18 @@ const init = () => {
  */
 function core($element, options) {
   const defaultOptions = {
-    start: new Date(),
-    end: null,
+    startDate: new Date(),
+    endDate: null,
     title: 'Set recurrence',
   };
 
   const settings = $.extend({}, defaultOptions, options);
 
-  $element.on('click', toggle);
-
   create(settings);
-  init();
-  reset();
+  init(settings);
+  reset(settings);
+
+  $element.on('click', toggle);
 }
 
 /**
@@ -208,10 +370,7 @@ function core($element, options) {
  */
 $.fn.extend({
   rdates(options) {
-    return this.each(() => {
-      const $element = $(this);
-      core($element, options);
-    });
+    return this.each(() => core($(this), options));
   },
 });
 
@@ -228,4 +387,6 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
   };
 }
 
-$('#my-show-modal-button').rdates();
+$('#my-show-modal-button').rdates({
+  startDate: new Date('08/27/23'),
+});

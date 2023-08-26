@@ -30,6 +30,7 @@ module.exports = {
   },
   globals: {
     $: true,
+    rrule: true,
     describe: 'readonly',
     it: 'readonly',
     beforeEach: 'readonly',

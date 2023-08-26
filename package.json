@@ -11,5 +11,8 @@
   },
   "scripts": {
     "test": "mocha"
+  },
+  "dependencies": {
+    "rrule": "^2.7.2"
   }
 }

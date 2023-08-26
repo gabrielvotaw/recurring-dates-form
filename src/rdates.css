@@ -42,7 +42,7 @@ select:focus {
   display: none !important;
 }
 
-.rdate-container {
+.rdates-container {
   font-family: 'Roboto', sans-serif;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
@@ -57,7 +57,7 @@ select:focus {
   justify-content: center;
 }
 
-.rdate {
+.rdates {
   background-color: white;
   min-width: 384px;
   max-width: 560px;
@@ -65,7 +65,7 @@ select:focus {
   border-radius: 8px;
 }
 
-.rdate-title {
+.rdates-title {
   color: #1c1c1c;
   margin-block-start: 0.83em;
   margin-block-end: 0.83em;
@@ -85,7 +85,7 @@ select:focus {
   letter-spacing: .00625em;
 }
 
-.rdate-main-content {
+.rdates-main-content {
   color: #3c4043;
   -webkit-box-flex: 1;
   overflow: auto;
@@ -96,14 +96,14 @@ select:focus {
   font-weight: 400;
 }
 
-.rdate-repeat-every {
+.rdates-repeat-every {
   padding: 8px 0px;
   -webkit-box-align: center;
   align-items: center;
   gap: 8px;
 }
 
-.rdate-interval-input {
+.rdates-interval-input {
   color: #3c4043;
   background-color: rgb(241,243,244);
   width: 30px;
@@ -114,7 +114,8 @@ select:focus {
   overflow: hidden;
 }
 
-.rdate-frequency-select {
+.rdates-frequency-select,
+.rdates-monthly-on-select {
   cursor: pointer;
   background-color: rgb(241,243,244);
   padding: 0 16px;
@@ -123,16 +124,16 @@ select:focus {
   height: 36px;
 }
 
-.rdate-ends-text,
-.rdate-repeat-on-text {
+.rdates-ends-text,
+.rdates-repeat-on-text {
   min-height: 40px;
   display: flex;
   align-items: center;
   -webkit-box-align: center;
 }
 
-.rdate-ends-on,
-.rdate-ends-after {
+.rdates-ends-on,
+.rdates-ends-after {
   height: 44px;
   margin-left: 1px;
   display: flex;
@@ -194,7 +195,7 @@ select:focus {
   height: 36px;
 }
 
-.rdate-control-button-group {
+.rdates-control-button-group {
   padding: 2px;
   position: relative;
   display: flex;
@@ -205,8 +206,8 @@ select:focus {
   min-height: 52px;
 }
 
-.rdate-cancel-btn,
-.rdate-done-btn {
+.rdates-cancel-btn,
+.rdates-done-btn {
   cursor: pointer;
   background-color: transparent;
   border: none;
@@ -215,30 +216,30 @@ select:focus {
   height: 32px;
 }
 
-.rdate-cancel-btn {
+.rdates-cancel-btn {
   color: rgb(95,99,104);
   margin-right: 10px;
 }
 
-.rdate-cancel-btn:hover {
+.rdates-cancel-btn:hover {
   color: #3c4043;
   background-color: rgba(0, 0, 0, 0.05)
 }
 
-.rdate-done-btn {
+.rdates-done-btn {
   color: rgb(26,115,232);
 }
 
-.rdate-done-btn:hover {
+.rdates-done-btn:hover {
   color: rgb(17, 81, 164);
   background-color: rgba(35, 35, 255, 0.05);
 }
 
-.rdate-weekdays-container {
+.rdates-weekdays-container {
   padding: 8px 0px;
 }
 
-.rdate-weekday {
+.rdates-weekday {
   width: 24px;
   height: 24px;
   background-color: rgb(241,243,244);
@@ -252,9 +253,13 @@ select:focus {
   cursor: pointer;
 }
 
-.rdate-weekday.active {
+.rdates-weekday.active {
   color: white;
   background-color: #007bff !important;
+}
+
+.rdates-month-container {
+  padding: 8px 0px;
 }
 
 .cancelBtn,

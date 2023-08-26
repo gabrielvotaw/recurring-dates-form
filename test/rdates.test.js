@@ -10,6 +10,7 @@ const dom = new JSDOM(
 global.document = dom.window.document;
 global.window = dom.window;
 global.$ = require('jquery');
+global.rrule = require('rrule');
 
 const { expect } = require('chai');
 
@@ -32,7 +33,7 @@ const testToggle = () => {
 
     beforeEach(() => {
       modal = document.createElement('div');
-      modal.classList.add('rdate-container');
+      modal.classList.add('rdates-container');
 
       document.body.appendChild(modal);
     });
