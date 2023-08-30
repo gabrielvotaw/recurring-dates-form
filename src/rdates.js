@@ -22,38 +22,47 @@
   SOFTWARE.
  */
 
-const daysOfWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-const frequencyMap = {
-  days: rrule.RRule.DAILY,
-  weeks: rrule.RRule.WEEKLY,
-  months: rrule.RRule.MONTHLY,
-  years: rrule.RRule.YEARLY,
-};
-
-const weekdayMap = {
-  SU: rrule.RRule.SU,
-  MO: rrule.RRule.MO,
-  TU: rrule.RRule.TU,
-  WE: rrule.RRule.WE,
-  TH: rrule.RRule.TH,
-  FR: rrule.RRule.FR,
-  SA: rrule.RRule.SA,
-};
-
 /**
- * Toggles the visibility of the modal.
+ * An encapsulation closure around the rdates jQuery plugin.
  */
-const toggle = () => $('.rdates-container').toggleClass('visible');
+(($) => {
+  const { RRule } = rrule;
 
-/**
- * Creates the modal and appends it to the root element.
- * @param {Object} settings - The modal settings.
- */
-const create = (settings) => {
-  const $modal = $('<div>')
-    .addClass('rdates-container')
-    .html(`
+  const DAYS_OF_WEEK_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  const FREQUENCY_MAP = {
+    days: RRule.DAILY,
+    weeks: RRule.WEEKLY,
+    months: RRule.MONTHLY,
+    years: RRule.YEARLY,
+  };
+
+  const WEEKDAY_MAP = {
+    SU: RRule.SU,
+    MO: RRule.MO,
+    TU: RRule.TU,
+    WE: RRule.WE,
+    TH: RRule.TH,
+    FR: RRule.FR,
+    SA: RRule.SA,
+  };
+
+  let dates = [];
+
+  /**
+   * Toggles the visibility of the modal.
+   */
+  const toggle = () => $('.rdates-container').toggleClass('visible');
+
+  /**
+   * Creates the modal and appends it to the root element.
+   *
+   * @param {Object} settings - The modal settings.
+   */
+  const create = (settings) => {
+    const $modal = $('<div>')
+      .addClass('rdates-container')
+      .html(`
       <div class='rdates'>
         <h2 class='rdates-title'>
           ${settings.title}
@@ -137,256 +146,350 @@ const create = (settings) => {
       </div>
   `);
 
-  $modal.appendTo('body');
-};
-
-/**
- * Handles the on change event of the frequency selector.
- */
-function onFrequencySelectChange() {
-  const selectedOption = $(this).val();
-
-  $('.content').addClass('hidden');
-  $(`#rdates-content-${selectedOption}`).removeClass('hidden');
-}
-
-const getDayOfWeek = (date) => {
-  const daysOfWeek = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-  return daysOfWeek[date.getDay()];
-};
-
-/**
- * Handles the on click event when selecting a weekday.
- *
- * @param {jQuery} $weekdayElement - The weekday element.
- * @param {string} settings - The modal settings.
- */
-function onWeekdayClick($weekdayElement, settings) {
-  const startDateDayOfWeek = getDayOfWeek(settings.startDate);
-  const $selectedDaysOfWeek = $('.rdates-weekday.active');
-  const isStartDateDayOfWeek = $weekdayElement.attr('data-dayofweek') === startDateDayOfWeek;
-
-  if (isStartDateDayOfWeek
-    && $selectedDaysOfWeek.length === 1
-    && $weekdayElement.hasClass('active')
-  ) {
-    return;
-  }
-
-  if ($selectedDaysOfWeek.length === 1
-    && $weekdayElement.hasClass('active')
-  ) {
-    $(`[data-dayofweek='${startDateDayOfWeek}']`).toggleClass('active');
-  }
-
-  $weekdayElement.toggleClass('active');
-}
-
-/**
- * Resets the modal to its initial state.
- *
- * @param {Object} settings - The modal settings.
- */
-const reset = (settings) => {
-  $('.rdates-interval-input').val(1);
-  $('.rdates-frequency-select').val('days').trigger('change');
-
-  const dayName = daysOfWeekNames[settings.startDate.getDay()];
-
-  const pos = Math.floor((settings.startDate.getDate() - 1) / 7) + 1;
-  const posStrings = ['first', 'second', 'third', 'fourth', 'last'];
-  const posString = posStrings[pos - 1] || 'last';
-
-  const option1 = $('<option>');
-  const option2 = $('<option>');
-
-  option1.text(`Monthly on day ${settings.startDate.getDate()}`);
-  option1.data('type', 'day');
-  option1.val(settings.startDate.getDate());
-
-  option2.text(`Monthly on the ${posString} ${dayName}`);
-  option2.data('type', 'pos');
-  option2.val(`${pos} ${dayName}`);
-
-  $('.rdates-monthly-on-select').append(option1, option2);
-
-  const radioEndsOn = $('#radio-ends-on');
-  if (!radioEndsOn.prop('checked')) {
-    radioEndsOn.prop('checked', true).trigger('change');
-  }
-
-  $('.ends-on-date-input').data('daterangepicker').setStartDate(settings.startDate);
-  $('.ends-on-date-input').data('daterangepicker').setEndDate(settings.startDate);
-  $('.ends-after-input').val(1);
-
-  const startDateDayOfWeek = getDayOfWeek(settings.startDate);
-  $(`[data-dayofweek="${startDateDayOfWeek}"]`).addClass('active');
-};
-
-/**
- * Handles the on click event of the cancel button.
- *
- * @param {settings} - The modal settings.
- */
-const onCancelClick = (settings) => {
-  toggle();
-  reset(settings);
-};
-
-const getSelectedWeekdays = () => {
-  const selectedWeekdayButtons = $('.rdates-weekday.active');
-
-  return selectedWeekdayButtons.map((i, button) => {
-    const value = button.getAttribute('data-dayofweek');
-    return weekdayMap[value];
-  });
-};
-
-const generateRule = (frequency, interval, dtstart, until) => {
-  const freq = frequencyMap[frequency];
-  const generator = {
-    freq,
-    interval,
-    dtstart,
+    $modal.appendTo('body');
   };
 
-  if (frequency === 'weeks') {
-    generator.byweekday = getSelectedWeekdays();
+  /**
+   * Handles the on change event of the frequency selector.
+   *
+   * @param {jQuery} $select - The select element.
+   */
+  function onFrequencySelectChange($select) {
+    const selectedOption = $select.val();
+
+    $('.content').addClass('hidden');
+    $(`#rdates-content-${selectedOption}`).removeClass('hidden');
   }
 
-  const endsOnRadio = $('#radio-ends-on');
+  /**
+   * Returns the day of week of the provided date in a shortened RRule compatible format.
+   *
+   * @param {Date} date - The date.
+   *
+   * @returns {string} - The day of the week.
+   */
+  const getDayOfWeek = (date) => {
+    const daysOfWeek = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+    return daysOfWeek[date.getDay()];
+  };
 
-  if (endsOnRadio.prop('checked')) {
-    generator.until = until;
-  } else {
-    const countString = $('.ends-after-input').val();
-    generator.count = parseInt(countString, 10);
+  /**
+   * Handles the on click event when selecting a weekday.
+   *
+   * @param {jQuery} $weekdayElement - The weekday element.
+   * @param {string} settings - The modal settings.
+   */
+  function onWeekdayClick($weekdayElement, settings) {
+    const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+    const $selectedDaysOfWeek = $('.rdates-weekday.active');
+    const isStartDateDayOfWeek = $weekdayElement.attr('data-dayofweek') === startDateDayOfWeek;
+
+    if (isStartDateDayOfWeek
+    && $selectedDaysOfWeek.length === 1
+    && $weekdayElement.hasClass('active')
+    ) {
+      return;
+    }
+
+    if ($selectedDaysOfWeek.length === 1
+    && $weekdayElement.hasClass('active')
+    ) {
+      $(`[data-dayofweek='${startDateDayOfWeek}']`).toggleClass('active');
+    }
+
+    $weekdayElement.toggleClass('active');
   }
 
-  return new rrule.RRule(generator);
-};
+  /**
+   * Returns whether the given date is the last occurrence of that weekday in its month.
+   *
+   * @param {Date} date - The date.
+   *
+   * @returns {boolean} - True if the date is the last occurrence, false otherwise.
+   */
+  const isLastOccurenceOfWeekdayInMonth = (date) => {
+    const month = date.getMonth();
+    const year = date.getFullYear();
 
-const generateDates = (startDate, endDate, untilDate) => {
-  const intervalString = $('.rdates-interval-input').val();
-  const selectedInterval = parseInt(intervalString, 10);
+    const dayNextWeek = new Date(year, month, date.getDate() + 7);
 
-  const selectedFrequency = $('.rdates-frequency-select').val();
+    return dayNextWeek.getMonth() !== month;
+  };
 
-  const startDateRules = generateRule(selectedFrequency, selectedInterval, startDate, untilDate);
-  const startDates = startDateRules.all();
+  /**
+   * Resets the modal to its initial state.
+   *
+   * @param {Object} settings - The modal settings.
+   */
+  const reset = (settings) => {
+    $('.rdates-interval-input').val(1);
+    $('.rdates-frequency-select').val('days').trigger('change');
 
-  if (!endDate) {
-    console.log(startDates);
-    return startDates;
+    const dayName = DAYS_OF_WEEK_NAMES[settings.startDate.getDay()];
+
+    $('.rdates-monthly-on-select').html('');
+
+    const pos = Math.floor((settings.startDate.getDate() - 1) / 7) + 1;
+    const posStrings = ['first', 'second', 'third', 'fourth'];
+    const posString = posStrings[pos - 1] || null;
+
+    const monthlyOnSelect = $('.rdates-monthly-on-select');
+
+    const option1 = $('<option>');
+
+    option1.text(`Monthly on day ${settings.startDate.getDate()}`);
+    option1.data('type', 'day');
+    option1.val(settings.startDate.getDate());
+
+    monthlyOnSelect.append(option1);
+
+    if (posString !== null) {
+      const option2 = $('<option>');
+
+      option2.text(`Monthly on the ${posString} ${dayName}`);
+      option2.data('type', 'pos');
+      option2.val(`${pos} ${dayName}`);
+
+      monthlyOnSelect.append(option2);
+    }
+
+    if (isLastOccurenceOfWeekdayInMonth(settings.startDate)) {
+      const option3 = $('<option>');
+
+      option3.text(`Monthly on the last ${dayName}`);
+      option3.data('type', 'pos');
+      option3.val(`-1 ${dayName}`);
+
+      monthlyOnSelect.append(option3);
+    }
+
+    const radioEndsOn = $('#radio-ends-on');
+    if (!radioEndsOn.prop('checked')) {
+      radioEndsOn.prop('checked', true).trigger('change');
+    }
+
+    $('.ends-on-date-input').data('daterangepicker').setStartDate(settings.startDate);
+    $('.ends-on-date-input').data('daterangepicker').setEndDate(settings.startDate);
+    $('.ends-after-input').val(1);
+
+    const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+    $(`[data-dayofweek="${startDateDayOfWeek}"]`).addClass('active');
+  };
+
+  /**
+   * Handles the on click event of the cancel button.
+   *
+   * @param {settings} - The modal settings.
+   */
+  const onCancelClick = (settings) => {
+    toggle();
+    reset(settings);
+  };
+
+  /**
+   * Returns the weekdays the user has selected for the week frequency section.
+   *
+   * @returns {Array<String>} - The selected weekdays.
+   */
+  const getSelectedWeekdays = () => {
+    const selectedWeekdayButtons = $('.rdates-weekday.active');
+
+    return selectedWeekdayButtons.map((i, button) => {
+      const value = button.getAttribute('data-dayofweek');
+      return WEEKDAY_MAP[value];
+    });
+  };
+
+  /**
+   * Generates an RRule given the provided data.
+   *
+   * @param {string} frequency - The recurrence frequency.
+   * @param {number} interval - The recurrence interval.
+   * @param {Date} dtstart - The starting date of the recurrence.
+   * @param {Date} until - The date the recurrence ends.
+   *
+   * @returns {RRule} - The generated RRule.
+   */
+  const generateRule = (frequency, interval, dtstart, until) => {
+    const freq = FREQUENCY_MAP[frequency];
+    const generator = {
+      freq,
+      interval,
+      dtstart,
+    };
+
+    if (frequency === 'weeks') {
+      generator.byweekday = getSelectedWeekdays();
+    } else if (frequency === 'months') {
+      const selectedOption = $('.rdates-monthly-on-select option:selected');
+      const type = selectedOption.data('type');
+
+      if (type === 'day') {
+        generator.bymonthday = parseInt(selectedOption.val(), 10);
+      } else if (type === 'pos') {
+        const [pos, dayName] = selectedOption.val().split(' ');
+
+        generator.byweekday = WEEKDAY_MAP[dayName.substring(0, 2).toUpperCase()];
+        generator.bysetpos = parseInt(pos, 10);
+      }
+    }
+
+    const endsOnRadio = $('#radio-ends-on');
+
+    if (endsOnRadio.prop('checked')) {
+      generator.until = until;
+    } else {
+      const countString = $('.ends-after-input').val();
+      generator.count = parseInt(countString, 10);
+    }
+
+    return new RRule(generator);
+  };
+
+  /**
+   * Generates a list of dates determined by the user's recurrence selections.
+   *
+   * @param {Date} startDate - The (start) date.
+   * @param {Date|null} endDate - The ending date of the date range.
+   * @param {Date} untilDate - The date the recurrence ends.
+   *
+   * @returns {Array<Date|Object>} - The list of dates or date ranges.
+   */
+  const generateDates = (startDate, endDate, untilDate) => {
+    const intervalString = $('.rdates-interval-input').val();
+    const selectedInterval = parseInt(intervalString, 10);
+
+    const selectedFrequency = $('.rdates-frequency-select').val();
+
+    const startDateRules = generateRule(selectedFrequency, selectedInterval, startDate, untilDate);
+    const startDates = startDateRules.all();
+
+    if (!endDate) {
+      return startDates;
+    }
+
+    const endDateRules = generateRule(selectedFrequency, selectedInterval, endDate, untilDate);
+
+    return endDateRules.all().map((end, i) => ({
+      start: startDates[i],
+      end,
+    }));
+  };
+
+  /**
+   * Handles the on click event of the done button.
+   *
+   * @param {Object} settings - The modal settings.
+   */
+  const onDoneClick = (settings) => {
+    const { startDate, endDate } = settings;
+    const untilDate = $('.ends-on-date-input').data('daterangepicker').startDate.toDate();
+
+    dates = generateDates(startDate, endDate, untilDate);
+
+    toggle();
+    reset(settings);
+  };
+
+  /**
+   * Handles the on change event of the ends radio inputs.
+   */
+  const onEndsRadioInputChange = () => {
+    $('.ends-input')
+      .toggleClass('disabled')
+      .prop('disabled', (i, val) => !val);
+    $('.ends-after-input-label').toggleClass('disabled');
+  };
+
+  /**
+   * Initializes the reactive behaviors of the modal and its elements.
+   *
+   * @param {Object} settings - The modal settings.
+   */
+  const init = (settings) => {
+    $('input[name="date"]').daterangepicker({
+      singleDatePicker: true,
+      minDate: settings.startDate,
+      locale: {
+        format: 'MMM D, YYYY',
+        daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        firstDay: 0,
+      },
+    });
+
+    $('.rdates-frequency-select').on('change', function handler() { onFrequencySelectChange($(this)); });
+    $('.rdates-weekday').on('click', function handler() { onWeekdayClick($(this), settings); });
+    $('input[type="radio"]').on('change', onEndsRadioInputChange);
+    $('.rdates-cancel-btn').on('click', () => onCancelClick(settings));
+    $('.rdates-done-btn').on('click', () => onDoneClick(settings));
+  };
+
+  /**
+   *
+   * Initializes a recurring dates generation form.
+   * Can generate single dates or sets of time ranges if an end date is provided.
+   *
+   * @param {jQuery} $element - The element that will trigger the modal.
+   * @param {Object} options - Configuration options.
+   * @param {Date} options.start - The (start) date for which dates will be generated.
+   * Represents a single date or the start date of the initial date range.
+   * Defaults to the current date.
+   * @param {Date|null} options.end - The end date of the initial date range. Defaults to null.
+   * @param {string} options.title - The title of the recurrence modal.
+   * Defaults to 'Set recurrence'.
+   *
+   */
+  function core($element, options) {
+    const defaultOptions = {
+      startDate: new Date(),
+      endDate: null,
+      title: 'Set recurrence',
+    };
+
+    const settings = $.extend({}, defaultOptions, options);
+
+    create(settings);
+    init(settings);
+    reset(settings);
+
+    $element.on('click', toggle);
   }
 
-  const endDateRules = generateRule(selectedFrequency, selectedInterval, endDate, untilDate);
-  const endDates = endDateRules.all();
+  /**
+  * Initializes the rdates jQuery plugin.
+  */
+  $.fn.extend({
+    rdates(options) {
+      const getResults = () => dates;
+      this.results = getResults;
 
-  const dateRanges = startDateRules.all().map((start, i) => ({
-    start,
-    end: endDates[i],
-  }));
-
-  return dateRanges;
-};
-
-/**
- * Handles the on click event of the done button.
- *
- * @param {Object} settings - The modal settings.
- */
-const onDoneClick = (settings) => {
-  const { startDate, endDate } = settings;
-  const untilDate = $('.ends-on-date-input').data('daterangepicker').startDate.toDate();
-
-  const dates = generateDates(startDate, endDate, untilDate);
-};
-
-/**
- * Handles the on change event of the ends radio inputs.
- */
-const onEndsRadioInputChange = () => {
-  $('.ends-input')
-    .toggleClass('disabled')
-    .prop('disabled', (i, val) => !val);
-};
-
-/**
- * Initializes the reactive behaviors of the modal and its elements.
- *
- * @param {Object} settings - The modal settings.
- */
-const init = (settings) => {
-  $('input[name="date"]').daterangepicker({
-    singleDatePicker: true,
-    minDate: settings.startDate,
-    locale: {
-      format: 'MMM D, YYYY',
-      daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-      monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      firstDay: 0,
+      return this.each(() => core($(this), options));
     },
   });
 
-  $('.rdates-frequency-select').on('change', onFrequencySelectChange);
-  $('.rdates-weekday').on('click', function handler() { onWeekdayClick($(this), settings); });
-  $('input[type="radio"]').on('change', onEndsRadioInputChange);
-  $('.rdates-cancel-btn').on('click', () => onCancelClick(settings));
-  $('.rdates-done-btn').on('click', () => onDoneClick(settings));
-};
-
-/**
- * Initializes a recurring dates generation form.
- * Can generate single dates or sets of time ranges if an end date is provided.
- *
- * @param {jQuery} $element - The element that will trigger the modal.
- * @param {Object} options - Configuration options.
- * @param {Date} options.start - The (start) date for which dates will be generated.
- * Represents a single date or the start date of the initial date range.
- * Defaults to the current date.
- * @param {Date|null} options.end - The end date of the initial date range. Defaults to null.
- * @param {string} options.title - The title of the recurrence modal. Defaults to 'Set recurrence'.
- *
- */
-function core($element, options) {
-  const defaultOptions = {
-    startDate: new Date(),
-    endDate: null,
-    title: 'Set recurrence',
-  };
-
-  const settings = $.extend({}, defaultOptions, options);
-
-  create(settings);
-  init(settings);
-  reset(settings);
-
-  $element.on('click', toggle);
-}
-
-/**
- * Initializes the rdates jQuery plugin.
- */
-$.fn.extend({
-  rdates(options) {
-    return this.each(() => core($(this), options));
-  },
-});
-
-if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
-  module.exports = {
+  const testingModule = {
     toggle,
     create,
     onFrequencySelectChange,
+    getDayOfWeek,
     onWeekdayClick,
+    isLastOccurenceOfWeekdayInMonth,
     reset,
     onCancelClick,
+    getSelectedWeekdays,
+    generateRule,
+    generateDates,
+    onDoneClick,
+    onEndsRadioInputChange,
     init,
     core,
   };
-}
 
-$('#my-show-modal-button').rdates({
-  startDate: new Date('08/27/23'),
-});
+  $.extend({ rdatesTestingModule: testingModule });
+})($);
+
+if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+  const { rdatesTestingModule } = $;
+  module.exports = rdatesTestingModule;
+}
