@@ -243,7 +243,7 @@
    *
    * @param {Config} config - The form settings.
    */
-  const reset = (config) => {
+  const softReset = (config) => {
     $('.rdates-interval-input').val(1);
     $('.rdates-frequency-select').val('days').trigger('change');
 
@@ -306,7 +306,7 @@
    */
   const onCancelClick = (config) => {
     toggle();
-    reset(config);
+    softReset(config);
 
     config.onCancelClick();
   };
@@ -414,7 +414,7 @@
     dates = generateDates(startDate, endDate, untilDate);
 
     toggle();
-    reset(config);
+    softReset(config);
 
     config.onDoneClick(dates);
   };
@@ -474,7 +474,7 @@
 
     create(settings);
     init(settings);
-    reset(settings);
+    softReset(settings);
 
     $element.on('click', toggle);
   }
@@ -483,6 +483,18 @@
    * Removes the recurring dates form from the document.
    */
   const destroy = () => $('.rdates-container').remove();
+
+  /**
+   * Reinitializes the form by destroying and recreating it.
+   *
+   * @param {Config} config - The form config.
+   */
+  const hardReset = (config) => {
+    destroy();
+    create(config);
+    init(config);
+    softReset(config);
+  };
 
   /**
    * Sets a new start date for the recurring dates form.
@@ -497,12 +509,9 @@
 
     newConfig.startDate = date;
 
-    destroy();
-    create(config);
-    init(config);
-    reset(config);
+    hardReset(newConfig);
 
-    return config;
+    return newConfig;
   };
 
   /**
@@ -521,7 +530,7 @@
     destroy();
     create(newConfig);
     init(newConfig);
-    reset(newConfig);
+    softReset(newConfig);
 
     return newConfig;
   };
@@ -552,7 +561,7 @@
     getDayOfWeek,
     onWeekdayClick,
     isLastOccurenceOfWeekdayInMonth,
-    reset,
+    softReset,
     onCancelClick,
     getSelectedWeekdays,
     generateRule,
@@ -562,6 +571,7 @@
     init,
     core,
     destroy,
+    hardReset,
     setStartDate,
     setEndDate,
   };
