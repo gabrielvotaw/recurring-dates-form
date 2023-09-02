@@ -23,6 +23,28 @@
  */
 
 /**
+ * @typedef {Object} Config
+ *
+ * @property {Date} startDate - The (start) date for which dates will be generated.
+ * Represents a single date or the start date of the initial date range.
+ * Defaults to the current date.
+ * @property {Date|null} endDate - The end date of the initial date range.
+ * Defaults to null.
+ * @property {string} title - The title of the recurrence form.
+ * Defaults to 'Set recurrence'.
+ * @property {function(): void} onCancelClick - A callback to be called on cancel click.
+ * @property {function(Array<Date|DateRange>): void} onDoneClick - A callback to be called
+ * with the generated dates or date ranges on done click.
+ */
+
+/**
+ * @typedef {Object} DateRange
+ *
+ * @property {Date} start - The start date of the date range.
+ * @property {Date} end - The end date of the date range.
+ */
+
+/**
  * An encapsulation closure around the rdates jQuery plugin.
  */
 (($) => {
@@ -57,15 +79,15 @@
   /**
    * Creates the form and appends it to the root element.
    *
-   * @param {Object} settings - The form settings.
+   * @param {Config} config - The form config.
    */
-  const create = (settings) => {
+  const create = (config) => {
     const $form = $('<div>')
       .addClass('rdates-container')
       .html(`
       <div class='rdates'>
         <h2 class='rdates-title'>
-          ${settings.title}
+          ${config.title}
         </h2>
         <div class='rdates-main-content'>
           <div class='rdates-repeat-every row'>
@@ -219,17 +241,17 @@
   /**
    * Resets the form to its initial state.
    *
-   * @param {Object} settings - The form settings.
+   * @param {Config} config - The form settings.
    */
-  const reset = (settings) => {
+  const reset = (config) => {
     $('.rdates-interval-input').val(1);
     $('.rdates-frequency-select').val('days').trigger('change');
 
-    const dayName = DAYS_OF_WEEK_NAMES[settings.startDate.getDay()];
+    const dayName = DAYS_OF_WEEK_NAMES[config.startDate.getDay()];
 
     $('.rdates-monthly-on-select').html('');
 
-    const pos = Math.floor((settings.startDate.getDate() - 1) / 7) + 1;
+    const pos = Math.floor((config.startDate.getDate() - 1) / 7) + 1;
     const posStrings = ['first', 'second', 'third', 'fourth'];
     const posString = posStrings[pos - 1] || null;
 
@@ -237,9 +259,9 @@
 
     const option1 = $('<option>');
 
-    option1.text(`Monthly on day ${settings.startDate.getDate()}`);
+    option1.text(`Monthly on day ${config.startDate.getDate()}`);
     option1.data('type', 'day');
-    option1.val(settings.startDate.getDate());
+    option1.val(config.startDate.getDate());
 
     monthlyOnSelect.append(option1);
 
@@ -253,7 +275,7 @@
       monthlyOnSelect.append(option2);
     }
 
-    if (isLastOccurenceOfWeekdayInMonth(settings.startDate)) {
+    if (isLastOccurenceOfWeekdayInMonth(config.startDate)) {
       const option3 = $('<option>');
 
       option3.text(`Monthly on the last ${dayName}`);
@@ -268,31 +290,31 @@
       radioEndsOn.prop('checked', true).trigger('change');
     }
 
-    $('.ends-on-date-input').data('daterangepicker').setStartDate(settings.startDate);
-    $('.ends-on-date-input').data('daterangepicker').setEndDate(settings.startDate);
+    $('.ends-on-date-input').data('daterangepicker').setStartDate(config.startDate);
+    $('.ends-on-date-input').data('daterangepicker').setEndDate(config.startDate);
     $('.ends-after-input').val(1);
 
-    const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+    const startDateDayOfWeek = getDayOfWeek(config.startDate);
     $(`[data-dayofweek="${startDateDayOfWeek}"]`).addClass('active');
   };
 
   /**
    * Handles the on click event of the cancel button
-   * and calls the respective callback in the settings.
+   * and calls the respective callback in the config.
    *
-   * @param {settings} - The form settings.
+   * @param {Config} config - The form config.
    */
-  const onCancelClick = (settings) => {
+  const onCancelClick = (config) => {
     toggle();
-    reset(settings);
+    reset(config);
 
-    settings.onCancelClick();
+    config.onCancelClick();
   };
 
   /**
    * Returns the weekdays the user has selected for the week frequency section.
    *
-   * @returns {Array<String>} - The selected weekdays.
+   * @returns {string[]} - The selected weekdays.
    */
   const getSelectedWeekdays = () => {
     const selectedWeekdayButtons = $('.rdates-weekday.active');
@@ -356,7 +378,7 @@
    * @param {Date|null} endDate - The ending date of the date range.
    * @param {Date} untilDate - The date the recurrence ends.
    *
-   * @returns {Array<Date|Object>} - The list of dates or date ranges.
+   * @returns {Array<Date|DateRange>} - The list of dates or date ranges.
    */
   const generateDates = (startDate, endDate, untilDate) => {
     const intervalString = $('.rdates-interval-input').val();
@@ -383,18 +405,18 @@
    * Handles the on click event of the done button and
    * calls the respective callback in the settings.
    *
-   * @param {Object} settings - The form settings.
+   * @param {Config} config - The form config.
    */
-  const onDoneClick = (settings) => {
-    const { startDate, endDate } = settings;
+  const onDoneClick = (config) => {
+    const { startDate, endDate } = config;
     const untilDate = $('.ends-on-date-input').data('daterangepicker').startDate.toDate();
 
     dates = generateDates(startDate, endDate, untilDate);
 
     toggle();
-    reset(settings);
+    reset(config);
 
-    settings.onDoneClick(dates);
+    config.onDoneClick(dates);
   };
 
   /**
@@ -410,12 +432,12 @@
   /**
    * Initializes the reactive behaviors of the form and its elements.
    *
-   * @param {Object} settings - The form settings.
+   * @param {Config} config - The form config.
    */
-  const init = (settings) => {
+  const init = (config) => {
     $('input[name="date"]').daterangepicker({
       singleDatePicker: true,
-      minDate: settings.startDate,
+      minDate: config.startDate,
       locale: {
         format: 'MMM D, YYYY',
         daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -425,10 +447,10 @@
     });
 
     $('.rdates-frequency-select').on('change', function handler() { onFrequencySelectChange($(this)); });
-    $('.rdates-weekday').on('click', function handler() { onWeekdayClick($(this), settings); });
+    $('.rdates-weekday').on('click', function handler() { onWeekdayClick($(this), config); });
     $('input[type="radio"]').on('change', onEndsRadioInputChange);
-    $('.rdates-cancel-btn').on('click', () => onCancelClick(settings));
-    $('.rdates-done-btn').on('click', () => onDoneClick(settings));
+    $('.rdates-cancel-btn').on('click', () => onCancelClick(config));
+    $('.rdates-done-btn').on('click', () => onDoneClick(config));
   };
 
   /**
@@ -437,16 +459,10 @@
    * Can generate recurring dates or recurring date ranges if an end date is provided.
    *
    * @param {jQuery} $element - The element that will trigger the form.
-   * @param {Object} options - Configuration options.
-   * @param {Date} options.startDate - The (start) date for which dates will be generated.
-   * Represents a single date or the start date of the initial date range.
-   * Defaults to the current date.
-   * @param {Date|null} options.endDate - The end date of the initial date range. Defaults to null.
-   * @param {string} options.title - The title of the recurrence form.
-   * Defaults to 'Set recurrence'.
+   * @param {Config} config - Configuration config.
    */
-  function core($element, options) {
-    const defaultOptions = {
+  function core($element, config) {
+    const defaultConfig = {
       startDate: new Date(),
       endDate: null,
       title: 'Set recurrence',
@@ -454,7 +470,7 @@
       onDoneClick: () => {},
     };
 
-    const settings = $.extend({}, defaultOptions, options);
+    const settings = $.extend({}, defaultConfig, config);
 
     create(settings);
     init(settings);
@@ -472,60 +488,60 @@
    * Sets a new start date for the recurring dates form.
    *
    * @param {Date} date - The new start date.
-   * @param {Object} options - The form options.
+   * @param {Config} config - The current form config.
    *
-   * @returns {Object} - The new settings.
+   * @returns {Config} - The new config.
    */
-  const setStartDate = (date, options) => {
-    const settings = { ...options };
+  const setStartDate = (date, config) => {
+    const newConfig = { ...config };
 
-    settings.startDate = date;
+    newConfig.startDate = date;
 
     destroy();
-    create(settings);
-    init(settings);
-    reset(settings);
+    create(config);
+    init(config);
+    reset(config);
 
-    return settings;
+    return config;
   };
 
   /**
    * Sets a new end date for the recurring dates form.
    *
    * @param {Date} date - The new end date.
-   * @param {Object} options - The current form options.
+   * @param {Config} config - The current form config.
    *
-   * @returns {Object} - The new settings.
+   * @returns {Config} - The new config.
    */
-  const setEndDate = (date, options) => {
-    const settings = { ...options };
+  const setEndDate = (date, config) => {
+    const newConfig = { ...config };
 
-    settings.endDate = date;
+    newConfig.endDate = date;
 
     destroy();
-    create(settings);
-    init(settings);
-    reset(settings);
+    create(newConfig);
+    init(newConfig);
+    reset(newConfig);
 
-    return settings;
+    return newConfig;
   };
 
   /**
   * Initializes the rdates jQuery plugin.
   */
   $.fn.extend({
-    rdates(options) {
-      let settings = { ...options };
+    rdates(config) {
+      let newConfig = { ...config };
 
+      const setStartDateFn = (date) => { newConfig = setStartDate(date, newConfig); };
+      const setEndDateFn = (date) => { newConfig = setEndDate(date, newConfig); };
       const getResults = () => dates;
-      const setStartDateFn = (date) => { settings = setStartDate(date, settings); };
-      const setEndDateFn = (date) => { settings = setEndDate(date, settings); };
 
-      this.results = getResults;
       this.setStartDate = setStartDateFn;
       this.setEndDate = setEndDateFn;
+      this.results = getResults;
 
-      return this.each(() => core($(this), options));
+      return this.each(() => core($(this), config));
     },
   });
 
