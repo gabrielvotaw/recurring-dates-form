@@ -389,6 +389,8 @@
 
     toggle();
     reset(settings);
+
+    settings.onDoneClick(dates);
   };
 
   /**
@@ -428,14 +430,14 @@
   /**
    *
    * Initializes a recurring dates generation form.
-   * Can generate single dates or sets of time ranges if an end date is provided.
+   * Can generate recurring dates or recurring date ranges if an end date is provided.
    *
    * @param {jQuery} $element - The element that will trigger the modal.
    * @param {Object} options - Configuration options.
-   * @param {Date} options.start - The (start) date for which dates will be generated.
+   * @param {Date} options.startDate - The (start) date for which dates will be generated.
    * Represents a single date or the start date of the initial date range.
    * Defaults to the current date.
-   * @param {Date|null} options.end - The end date of the initial date range. Defaults to null.
+   * @param {Date|null} options.endDate - The end date of the initial date range. Defaults to null.
    * @param {string} options.title - The title of the recurrence modal.
    * Defaults to 'Set recurrence'.
    *
@@ -457,12 +459,66 @@
   }
 
   /**
+   * Removes the recurring dates form from the document.
+   */
+  const destroy = () => $('.rdates-container').remove();
+
+  /**
+   * Sets a new start date for the recurring dates form.
+   *
+   * @param {Date} date - The new start date.
+   * @param {Object} options - The modal options.
+   *
+   * @returns {Object} - The new settings.
+   */
+  const setStartDate = (date, options) => {
+    const settings = { ...options };
+
+    settings.startDate = date;
+
+    destroy();
+    create(settings);
+    init(settings);
+    reset(settings);
+
+    return settings;
+  };
+
+  /**
+   * Sets a new end date for the recurring dates form.
+   *
+   * @param {Date} date - The new end date.
+   * @param {Object} options - The current modal options.
+   *
+   * @returns {Object} - The new settings.
+   */
+  const setEndDate = (date, options) => {
+    const settings = { ...options };
+
+    settings.endDate = date;
+
+    destroy();
+    create(settings);
+    init(settings);
+    reset(settings);
+
+    return settings;
+  };
+
+  /**
   * Initializes the rdates jQuery plugin.
   */
   $.fn.extend({
     rdates(options) {
+      let settings = { ...options };
+
       const getResults = () => dates;
+      const setStartDateFn = (date) => { settings = setStartDate(date, settings); };
+      const setEndDateFn = (date) => { settings = setEndDate(date, settings); };
+
       this.results = getResults;
+      this.setStartDate = setStartDateFn;
+      this.setEndDate = setEndDateFn;
 
       return this.each(() => core($(this), options));
     },
@@ -484,6 +540,9 @@
     onEndsRadioInputChange,
     init,
     core,
+    destroy,
+    setStartDate,
+    setEndDate,
   };
 
   $.extend({ rdatesTestingModule: testingModule });
