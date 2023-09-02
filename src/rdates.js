@@ -50,17 +50,17 @@
   let dates = [];
 
   /**
-   * Toggles the visibility of the modal.
+   * Toggles the visibility of the form.
    */
   const toggle = () => $('.rdates-container').toggleClass('visible');
 
   /**
-   * Creates the modal and appends it to the root element.
+   * Creates the form and appends it to the root element.
    *
-   * @param {Object} settings - The modal settings.
+   * @param {Object} settings - The form settings.
    */
   const create = (settings) => {
-    const $modal = $('<div>')
+    const $form = $('<div>')
       .addClass('rdates-container')
       .html(`
       <div class='rdates'>
@@ -146,7 +146,7 @@
       </div>
   `);
 
-    $modal.appendTo('body');
+    $form.appendTo('body');
   };
 
   /**
@@ -177,7 +177,7 @@
    * Handles the on click event when selecting a weekday.
    *
    * @param {jQuery} $weekdayElement - The weekday element.
-   * @param {string} settings - The modal settings.
+   * @param {string} settings - The form settings.
    */
   function onWeekdayClick($weekdayElement, settings) {
     const startDateDayOfWeek = getDayOfWeek(settings.startDate);
@@ -217,9 +217,9 @@
   };
 
   /**
-   * Resets the modal to its initial state.
+   * Resets the form to its initial state.
    *
-   * @param {Object} settings - The modal settings.
+   * @param {Object} settings - The form settings.
    */
   const reset = (settings) => {
     $('.rdates-interval-input').val(1);
@@ -277,9 +277,10 @@
   };
 
   /**
-   * Handles the on click event of the cancel button.
+   * Handles the on click event of the cancel button
+   * and calls the respective callback in the settings.
    *
-   * @param {settings} - The modal settings.
+   * @param {settings} - The form settings.
    */
   const onCancelClick = (settings) => {
     toggle();
@@ -379,9 +380,10 @@
   };
 
   /**
-   * Handles the on click event of the done button.
+   * Handles the on click event of the done button and
+   * calls the respective callback in the settings.
    *
-   * @param {Object} settings - The modal settings.
+   * @param {Object} settings - The form settings.
    */
   const onDoneClick = (settings) => {
     const { startDate, endDate } = settings;
@@ -406,9 +408,9 @@
   };
 
   /**
-   * Initializes the reactive behaviors of the modal and its elements.
+   * Initializes the reactive behaviors of the form and its elements.
    *
-   * @param {Object} settings - The modal settings.
+   * @param {Object} settings - The form settings.
    */
   const init = (settings) => {
     $('input[name="date"]').daterangepicker({
@@ -434,15 +436,14 @@
    * Initializes a recurring dates generation form.
    * Can generate recurring dates or recurring date ranges if an end date is provided.
    *
-   * @param {jQuery} $element - The element that will trigger the modal.
+   * @param {jQuery} $element - The element that will trigger the form.
    * @param {Object} options - Configuration options.
    * @param {Date} options.startDate - The (start) date for which dates will be generated.
    * Represents a single date or the start date of the initial date range.
    * Defaults to the current date.
    * @param {Date|null} options.endDate - The end date of the initial date range. Defaults to null.
-   * @param {string} options.title - The title of the recurrence modal.
+   * @param {string} options.title - The title of the recurrence form.
    * Defaults to 'Set recurrence'.
-   *
    */
   function core($element, options) {
     const defaultOptions = {
@@ -471,7 +472,7 @@
    * Sets a new start date for the recurring dates form.
    *
    * @param {Date} date - The new start date.
-   * @param {Object} options - The modal options.
+   * @param {Object} options - The form options.
    *
    * @returns {Object} - The new settings.
    */
@@ -492,7 +493,7 @@
    * Sets a new end date for the recurring dates form.
    *
    * @param {Date} date - The new end date.
-   * @param {Object} options - The current modal options.
+   * @param {Object} options - The current form options.
    *
    * @returns {Object} - The new settings.
    */
