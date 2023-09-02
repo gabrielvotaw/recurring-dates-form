@@ -527,10 +527,7 @@
 
     newConfig.endDate = date;
 
-    destroy();
-    create(newConfig);
-    init(newConfig);
-    softReset(newConfig);
+    hardReset(newConfig);
 
     return newConfig;
   };
