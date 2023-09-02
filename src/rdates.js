@@ -284,6 +284,8 @@
   const onCancelClick = (settings) => {
     toggle();
     reset(settings);
+
+    settings.onCancelClick();
   };
 
   /**
@@ -447,6 +449,8 @@
       startDate: new Date(),
       endDate: null,
       title: 'Set recurrence',
+      onCancelClick: () => {},
+      onDoneClick: () => {},
     };
 
     const settings = $.extend({}, defaultOptions, options);
