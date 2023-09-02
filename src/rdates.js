@@ -23,6 +23,13 @@
  */
 
 /**
+ * @typedef {Object} DateRange
+ *
+ * @property {Date} start - The start date of the date range.
+ * @property {Date} end - The end date of the date range.
+ */
+
+/**
  * @typedef {Object} Config
  *
  * @property {Date} startDate - The (start) date for which dates will be generated.
@@ -35,13 +42,6 @@
  * @property {function(): void} onCancelClick - A callback to be called on cancel click.
  * @property {function(Array<Date|DateRange>): void} onDoneClick - A callback to be called
  * with the generated dates or date ranges on done click.
- */
-
-/**
- * @typedef {Object} DateRange
- *
- * @property {Date} start - The start date of the date range.
- * @property {Date} end - The end date of the date range.
  */
 
 /**
