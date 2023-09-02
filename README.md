@@ -1,6 +1,7 @@
 <a name="readme-top"></a>
 <br />
 <p align="center">
+  <img src="./assets/preview.png" width="350px">
   <h3 align="center">Recurring Dates Form</h3>
 </p>
 
