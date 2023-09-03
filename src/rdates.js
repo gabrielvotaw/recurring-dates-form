@@ -88,7 +88,7 @@
     /**
      * Creates the form and appends it to the root element.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const create = (config) => {
         const $form = $('<div>').addClass('rdates-container').html(`
@@ -236,7 +236,7 @@
      * Handles the on click event when selecting a weekday.
      *
      * @param {jQuery} $weekdayElement - The weekday element.
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     function onWeekdayClick($weekdayElement, config) {
         const startDateDayOfWeek = getDayOfWeek(config.startDate);
@@ -283,7 +283,7 @@
     /**
      * Resets the form to its initial state.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const softReset = (config) => {
         $('.rdates-interval-input').val(1);
@@ -346,9 +346,9 @@
 
     /**
      * Handles the on click event of the cancel button
-     * and calls the respective callback in the config.
+     * and calls the respective callback in the configuration.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const onCancelClick = (config) => {
         toggle();
@@ -466,7 +466,7 @@
      * Handles the on click event of the done button and
      * calls the respective callback in the config.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const onDoneClick = (config) => {
         const { startDate, endDate } = config;
@@ -495,7 +495,7 @@
     /**
      * Initializes the reactive behaviors of the form and its elements.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const init = (config) => {
         $('input[name="date"]').daterangepicker({
@@ -534,13 +534,12 @@
     };
 
     /**
-     *
      * Initializes a recurring dates generation form.
      * Can generate recurring dates or recurring
      * date ranges if an end date is provided.
      *
      * @param {jQuery} $element - The element that will trigger the form.
-     * @param {Config} config - Configuration config.
+     * @param {Config} config - The form configuration.
      */
     function core($element, customConfig) {
         const defaultConfig = {
@@ -568,7 +567,7 @@
     /**
      * Reinitializes the form by destroying and recreating it.
      *
-     * @param {Config} config - The form config.
+     * @param {Config} config - The form configuration.
      */
     const hardReset = (config) => {
         destroy();
@@ -581,9 +580,9 @@
      * Sets a new start date for the recurring dates form.
      *
      * @param {Date} date - The new start date.
-     * @param {Config} config - The current form config.
+     * @param {Config} config - The current form configuration.
      *
-     * @returns {Config} - The new config.
+     * @returns {Config} - The new form configuration.
      */
     const setStartDate = (date, config) => {
         const newConfig = { ...config };

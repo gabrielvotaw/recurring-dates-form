@@ -41,6 +41,9 @@ const {
     setEndDate,
 } = rdates;
 
+/**
+ * Test suite for the toggle function.
+ */
 const testToggle = () => {
     describe('starting test cases for toggle', () => {
         let $modal;
@@ -70,6 +73,9 @@ const testToggle = () => {
     });
 };
 
+/**
+ * Test suite for the create function.
+ */
 const testCreate = () => {
     describe('starting test cases for create', () => {
         it('should append the correct HTML to the document body', () => {
@@ -87,6 +93,9 @@ const testCreate = () => {
     });
 };
 
+/**
+ * Test suite for the onFrequencySelectChange function.
+ */
 const testOnFrequencySelectChange = () => {
     describe('starting test cases for onFrequencySelectChange', () => {
         let $select;
@@ -140,6 +149,9 @@ const testOnFrequencySelectChange = () => {
     });
 };
 
+/**
+ * Test suite for the getDayOfWeek function.
+ */
 const testGetDayOfWeek = () => {
     describe('starting test cases for getDayOfWeek', () => {
         it('returns the expected day of week string', () => {
@@ -161,6 +173,9 @@ const testGetDayOfWeek = () => {
     });
 };
 
+/**
+ * Test suite for the onWeekdayClick function.
+ */
 const testOnWeekdayClick = () => {
     describe('starting test cases for onWeekdayClick', () => {
         it('should not unselect the clicked weekday if it is the same weekday '
@@ -234,6 +249,9 @@ const testOnWeekdayClick = () => {
     });
 };
 
+/**
+ * Test suite for the isLastOccurrenceOfWeekdayInMonth function.
+ */
 const testIsLastOcurrenceOfWeekdayInMonth = () => {
     describe('starting test cases for isLastOcurrenceOfWeekdayInMonth', () => {
         it('should return true if the date is the last occurrence '
@@ -265,6 +283,9 @@ const testIsLastOcurrenceOfWeekdayInMonth = () => {
     });
 };
 
+/**
+ * Test suite for the rdates jQuery plugin.
+ */
 describe('starting test cases for rdates', () => {
     afterEach(() => { document.body.innerHTML = ''; });
 
