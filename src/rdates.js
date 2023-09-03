@@ -236,10 +236,10 @@
      * Handles the on click event when selecting a weekday.
      *
      * @param {jQuery} $weekdayElement - The weekday element.
-     * @param {string} settings - The form settings.
+     * @param {Config} config - The form config.
      */
-    function onWeekdayClick($weekdayElement, settings) {
-        const startDateDayOfWeek = getDayOfWeek(settings.startDate);
+    function onWeekdayClick($weekdayElement, config) {
+        const startDateDayOfWeek = getDayOfWeek(config.startDate);
         const $selectedDaysOfWeek = $('.rdates-weekday.active');
         const isStartDateDayOfWeek = $weekdayElement.attr('data-dayofweek')
             === startDateDayOfWeek;
@@ -283,7 +283,7 @@
     /**
      * Resets the form to its initial state.
      *
-     * @param {Config} config - The form settings.
+     * @param {Config} config - The form config.
      */
     const softReset = (config) => {
         $('.rdates-interval-input').val(1);
@@ -464,7 +464,7 @@
 
     /**
      * Handles the on click event of the done button and
-     * calls the respective callback in the settings.
+     * calls the respective callback in the config.
      *
      * @param {Config} config - The form config.
      */
@@ -542,7 +542,7 @@
      * @param {jQuery} $element - The element that will trigger the form.
      * @param {Config} config - Configuration config.
      */
-    function core($element, config) {
+    function core($element, customConfig) {
         const defaultConfig = {
             startDate: new Date(),
             endDate: null,
@@ -551,11 +551,11 @@
             onDoneClick: () => {},
         };
 
-        const settings = $.extend({}, defaultConfig, config);
+        const config = $.extend({}, defaultConfig, customConfig);
 
-        create(settings);
-        init(settings);
-        softReset(settings);
+        create(config);
+        init(config);
+        softReset(config);
 
         $element.on('click', toggle);
     }
