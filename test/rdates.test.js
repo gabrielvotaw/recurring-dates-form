@@ -48,25 +48,21 @@ const testToggle = () => {
             $('body').append($modal);
         });
 
-        it(
-            'should add the "visible" class to the modal if it is not visible',
-            () => {
-                toggle();
+        it('should add the "visible" class to the'
+                + 'modal if it is not visible', () => {
+            toggle();
 
-                expect($modal.hasClass('visible')).to.equal(true);
-            },
-        );
+            expect($modal.hasClass('visible')).to.equal(true);
+        });
 
-        it(
-            'should remove the "visible" class from the modal if it is visible',
-            () => {
-                $modal.addClass('visible');
+        it('should remove the "visible" class from'
+                + 'the modal if it is visible', () => {
+            $modal.addClass('visible');
 
-                toggle();
+            toggle();
 
-                expect($modal.hasClass('visible')).to.equal(false);
-            },
-        );
+            expect($modal.hasClass('visible')).to.equal(false);
+        });
     });
 };
 
@@ -80,37 +76,63 @@ const testCreate = () => {
 
             expect(actualHtml).to.equal(expectedHtml);
         });
+
+        it('should throw expected error if a config is not provided', () => {
+            expect(create).to.throw(TypeError);
+        });
     });
 };
 
 const testOnFrequencySelectChange = () => {
     describe('starting test cases for onFrequencySelectChange', () => {
-        it(
-            `should add the "hidden" class to elements 
-                that do not match the selected option`,
-            () => {
-                const $select = $('<select>');
-                const $option = $('<option>').val('test');
+        let $select;
+        let $option;
 
-                $select.append($option);
-                $select.val('test');
+        beforeEach(() => {
+            $select = $('<select>');
+            $option = $('<option>').val('test');
 
-                const $content1 = $('<div>')
-                    .attr('id', 'rdates-content-test')
-                    .addClass('content');
+            $select.append($option);
+            $select.val('test');
+        });
 
-                const $content2 = $('<div>')
-                    .attr('id', 'rdates-content-other')
-                    .addClass('content');
+        it('should add the "hidden" class to elements that do not'
+                + 'match the selected option', () => {
+            const $content = $('<div>')
+                .attr('id', 'rdates-content-other')
+                .addClass('content');
 
-                $('body').append($select, $content1, $content2);
+            $('body').append($select, $content);
 
-                onFrequencySelectChange($select);
+            onFrequencySelectChange($select);
 
-                expect($content1.hasClass('hidden')).to.equal(false);
-                expect($content2.hasClass('hidden')).to.equal(true);
-            },
-        );
+            expect($content.hasClass('hidden')).to.equal(true);
+        });
+
+        it('should remove the "hidden" class from the elements that'
+                + 'match the selected option', () => {
+            const $content = $('<div>')
+                .attr('id', 'rdates-content-test')
+                .addClass('content hidden');
+
+            $('body').append($select, $content);
+
+            onFrequencySelectChange($select);
+
+            expect($content.hasClass('hidden')).to.equal(false);
+        });
+
+        it('should throw expected error if an element is not provided', () => {
+            expect(onFrequencySelectChange).to.throw(Error);
+        });
+
+        it('should throw expected error if the element'
+                + 'provided is not a jQuery element', () => {
+            const fakeHtmlElement = document.createElement('div');
+
+            expect(() => onFrequencySelectChange(fakeHtmlElement))
+                .to.throw(Error);
+        });
     });
 };
 
