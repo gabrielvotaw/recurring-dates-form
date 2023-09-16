@@ -45,7 +45,7 @@ const {
 } = rdates;
 
 const testToggle = () => {
-  describe('starting test cases for toggle', () => {
+  describe('toggle', () => {
     let $modal;
 
     beforeEach(() => {
@@ -74,7 +74,7 @@ const testToggle = () => {
 };
 
 const testCreate = () => {
-  describe('starting test cases for create', () => {
+  describe('create', () => {
     test('should append the correct HTML to the document body', () => {
       create({ title: 'test title' });
 
@@ -91,7 +91,7 @@ const testCreate = () => {
 };
 
 const testOnFrequencySelectChange = () => {
-  describe('starting test cases for onFrequencySelectChange', () => {
+  describe('onFrequencySelectChange', () => {
     let $select;
     let $option;
 
@@ -144,7 +144,7 @@ const testOnFrequencySelectChange = () => {
 };
 
 const testGetDayOfWeek = () => {
-  describe('starting test cases for getDayOfWeek', () => {
+  describe('getDayOfWeek', () => {
     test('returns the expected day of week string', () => {
       const fakeDate = new Date(2023, 8, 3);
 
@@ -165,7 +165,7 @@ const testGetDayOfWeek = () => {
 };
 
 const testOnWeekdayClick = () => {
-  describe('starting test cases for onWeekdayClick', () => {
+  describe('onWeekdayClick', () => {
     test('should not unselect the clicked weekday if it is the same weekday '
                 + 'as the start date and is the only element selected', () => {
       const fakeConfig = { startDate: new Date(2023, 8, 3) };
@@ -238,7 +238,7 @@ const testOnWeekdayClick = () => {
 };
 
 const testIsLastOcurrenceOfWeekdayInMonth = () => {
-  describe('starting test cases for isLastOcurrenceOfWeekdayInMonth', () => {
+  describe('isLastOcurrenceOfWeekdayInMonth', () => {
     test('should return true if the date is the last occurrence '
                 + 'of its weekday in its month', () => {
       const fakeDate = new Date(2023, 7, 31);
@@ -268,7 +268,7 @@ const testIsLastOcurrenceOfWeekdayInMonth = () => {
   });
 };
 
-describe('starting test cases for rdates', () => {
+describe('rdates', () => {
   afterEach(() => { document.body.innerHTML = ''; });
 
   testToggle();
