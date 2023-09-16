@@ -1,18 +1,21 @@
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from 'bun:test';
+
 process.env.NODE_ENV = 'test';
 
 const { JSDOM } = require('jsdom');
 
-const dom = new JSDOM(
-  '<!DOCTYPE html><html><body></body></html>',
-  { runScripts: 'dangerously' },
-);
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
 
 global.document = dom.window.document;
 global.window = dom.window;
 global.$ = require('jquery');
 global.rrule = require('rrule');
-
-const { expect } = require('chai');
 
 const { normalizeString } = require('./utils');
 const { expectedHtmlFromCreate } = require('./test-data');
@@ -52,37 +55,37 @@ const testToggle = () => {
       $('body').append($modal);
     });
 
-    it('should add the "visible" class to the '
+    test('should add the "visible" class to the '
                 + 'modal if it is not visible', () => {
       toggle();
 
-      expect($modal.hasClass('visible')).to.equal(true);
+      expect($modal.hasClass('visible')).toBe(true);
     });
 
-    it('should remove the "visible" class from '
+    test('should remove the "visible" class from '
                 + 'the modal if it is visible', () => {
       $modal.addClass('visible');
 
       toggle();
 
-      expect($modal.hasClass('visible')).to.equal(false);
+      expect($modal.hasClass('visible')).toBe(false);
     });
   });
 };
 
 const testCreate = () => {
   describe('starting test cases for create', () => {
-    it('should append the correct HTML to the document body', () => {
+    test('should append the correct HTML to the document body', () => {
       create({ title: 'test title' });
 
       const actualHtml = normalizeString(document.body.innerHTML);
       const expectedHtml = normalizeString(expectedHtmlFromCreate);
 
-      expect(actualHtml).to.equal(expectedHtml);
+      expect(actualHtml).toEqual(expectedHtml);
     });
 
-    it('should throw expected error if a config is not provided', () => {
-      expect(create).throws(TypeError);
+    test('should throw expected error if a config is not provided', () => {
+      expect(create).toThrow(TypeError);
     });
   });
 };
@@ -100,7 +103,7 @@ const testOnFrequencySelectChange = () => {
       $select.val('test');
     });
 
-    it('should add the "hidden" class to elements that do not '
+    test('should add the "hidden" class to elements that do not '
                 + 'match the selected option', () => {
       const $content = $('<div>')
         .attr('id', 'rdates-content-other')
@@ -110,10 +113,10 @@ const testOnFrequencySelectChange = () => {
 
       onFrequencySelectChange($select);
 
-      expect($content.hasClass('hidden')).to.equal(true);
+      expect($content.hasClass('hidden')).toBe(true);
     });
 
-    it('should remove the "hidden" class from the elements that '
+    test('should remove the "hidden" class from the elements that '
                 + 'match the selected option', () => {
       const $content = $('<div>')
         .attr('id', 'rdates-content-test')
@@ -123,47 +126,47 @@ const testOnFrequencySelectChange = () => {
 
       onFrequencySelectChange($select);
 
-      expect($content.hasClass('hidden')).to.equal(false);
+      expect($content.hasClass('hidden')).toBe(false);
     });
 
-    it('should throw expected error if an element is not provided', () => {
-      expect(onFrequencySelectChange).throws(Error);
+    test('should throw expected error if an element is not provided', () => {
+      expect(onFrequencySelectChange).toThrow(Error);
     });
 
-    it('should throw expected error if the element '
+    test('should throw expected error if the element '
                 + 'provided is not a jQuery element', () => {
       const fakeHtmlElement = document.createElement('div');
 
       expect(() => onFrequencySelectChange(fakeHtmlElement))
-        .throws(Error);
+        .toThrow(Error);
     });
   });
 };
 
 const testGetDayOfWeek = () => {
   describe('starting test cases for getDayOfWeek', () => {
-    it('returns the expected day of week string', () => {
+    test('returns the expected day of week string', () => {
       const fakeDate = new Date(2023, 8, 3);
 
       const dayOfWeek = getDayOfWeek(fakeDate);
 
-      expect(dayOfWeek).to.equal('SU');
+      expect(dayOfWeek).toBe('SU');
     });
 
-    it('should throw expected error if a date is not provided', () => {
-      expect(getDayOfWeek).throws(Error);
+    test('should throw expected error if a date is not provided', () => {
+      expect(getDayOfWeek).toThrow(Error);
     });
 
-    it('should throw expected error if the '
+    test('should throw expected error if the '
                 + 'passed argument is not a Date', () => {
-      expect(() => getDayOfWeek(1)).throws(Error);
+      expect(() => getDayOfWeek(1)).toThrow(Error);
     });
   });
 };
 
 const testOnWeekdayClick = () => {
   describe('starting test cases for onWeekdayClick', () => {
-    it('should not unselect the clicked weekday if it is the same weekday '
+    test('should not unselect the clicked weekday if it is the same weekday '
                 + 'as the start date and is the only element selected', () => {
       const fakeConfig = { startDate: new Date(2023, 8, 3) };
 
@@ -175,10 +178,10 @@ const testOnWeekdayClick = () => {
 
       onWeekdayClick($fakeWeekday, fakeConfig);
 
-      expect($fakeWeekday.hasClass('active')).to.equal(true);
+      expect($fakeWeekday.hasClass('active')).toBe(true);
     });
 
-    it('should select the weekday of the start date if another weekday '
+    test('should select the weekday of the start date if another weekday '
                 + 'is unselected and it is the only selected weekday', () => {
       const fakeConfig = { startDate: new Date(2023, 8, 3) };
 
@@ -194,10 +197,10 @@ const testOnWeekdayClick = () => {
 
       onWeekdayClick($fakeWeekday, fakeConfig);
 
-      expect($fakeWeekdayOfStartDate.hasClass('active')).to.equal(true);
+      expect($fakeWeekdayOfStartDate.hasClass('active')).toBe(true);
     });
 
-    it('should toggle the weekday element', () => {
+    test('should toggle the weekday element', () => {
       const fakeConfig = { startDate: new Date(2023, 8, 3) };
 
       const $fakeWeekday = $('<div>')
@@ -212,55 +215,55 @@ const testOnWeekdayClick = () => {
 
       onWeekdayClick($fakeWeekday, fakeConfig);
 
-      expect($fakeWeekday.hasClass('active')).to.equal(false);
+      expect($fakeWeekday.hasClass('active')).toBe(false);
     });
 
-    it('should throw expected error when a config is not provided', () => {
+    test('should throw expected error when a config is not provided', () => {
       const $fakeWeekday = $('<div>')
         .addClass('rdates-weekday active')
         .attr('data-dayofweek', 'SU');
 
       $('body').append($fakeWeekday);
 
-      expect(() => onWeekdayClick($fakeWeekday)).throws(Error);
+      expect(() => onWeekdayClick($fakeWeekday)).toThrow(Error);
     });
 
-    it('should throw expected error when '
+    test('should throw expected error when '
                 + 'an element is not provided', () => {
       const fakeConfig = { startDate: new Date(2023, 8, 3) };
 
-      expect(() => onWeekdayClick(null, fakeConfig)).throws(Error);
+      expect(() => onWeekdayClick(null, fakeConfig)).toThrow(Error);
     });
   });
 };
 
 const testIsLastOcurrenceOfWeekdayInMonth = () => {
   describe('starting test cases for isLastOcurrenceOfWeekdayInMonth', () => {
-    it('should return true if the date is the last occurrence '
+    test('should return true if the date is the last occurrence '
                 + 'of its weekday in its month', () => {
       const fakeDate = new Date(2023, 7, 31);
 
       const isLastOccurrence = isLastOccurenceOfWeekdayInMonth(fakeDate);
 
-      expect(isLastOccurrence).to.equal(true);
+      expect(isLastOccurrence).toBe(true);
     });
 
-    it('should return false if the date is not the last ocurrence '
+    test('should return false if the date is not the last ocurrence '
                 + 'of its weekday in its month', () => {
       const fakeDate = new Date(2023, 8, 1);
 
       const isLastOccurrence = isLastOccurenceOfWeekdayInMonth(fakeDate);
 
-      expect(isLastOccurrence).to.equal(false);
+      expect(isLastOccurrence).toBe(false);
     });
 
-    it('should throw expected error if a date is not provided', () => {
-      expect(isLastOccurenceOfWeekdayInMonth).throws(Error);
+    test('should throw expected error if a date is not provided', () => {
+      expect(isLastOccurenceOfWeekdayInMonth).toThrow(Error);
     });
 
-    it('should throw expected error if the provided '
+    test('should throw expected error if the provided '
                 + 'argument is not a date', () => {
-      expect(() => isLastOccurenceOfWeekdayInMonth(1)).throws(Error);
+      expect(() => isLastOccurenceOfWeekdayInMonth(1)).toThrow(Error);
     });
   });
 };

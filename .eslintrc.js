@@ -28,6 +28,10 @@ module.exports = {
         devDependencies: true,
       },
     ],
+    'import/no-unresolved': [
+      'error',
+      { ignore: ['bun:test'] },
+    ],
   },
   globals: {
     $: true,
